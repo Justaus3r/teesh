@@ -24,16 +24,25 @@ typedef struct {
     unsigned int end;
 } PipeLocation; 
 
+typedef enum {
+     NONE = 0,
+     LEADING,
+     TRAILING,
+     BOTH,
+} SpaceCheck; 
+
 size_t read_command_raw(Command* cmd);
 
 static Command* COMMAND_STORE[MAX_FDS];
 
+void __get_cmd_output(Command*);
 CursorPosition get_cursor_position(int check_unicode);
 
 int is_unicode_supported();
 
 PipeLocation* count_pipes(Command*);
 
-void populate_command_store(Command*);
+SpaceCheck __check_whitespaces(unsigned int, unsigned int, char*);
+void populate_command_store(Command*, PipeLocation*);
 
 #endif // COMMAND_H

@@ -70,11 +70,13 @@ int is_unicode_supported(){
 }
 
 PipeLocation* count_pipes(Command *cmd){
-    /*
+
+    /* `PipeLocation` a misnomer; actually provides commands location
+     *
      * PipeLocation* basic structure
      *     
      *     0                    1                  2
-     *   |pipe count|p|q| -> |pipe count|x|y| ->  ...    
+     *   |pipe count|p|q| -> |0|x|y| ->  ...    
      */
 
     // we assume the most popular int byte size: 4 and multiply with that MAX_FDS as we expect no more pipes than that
@@ -89,13 +91,11 @@ PipeLocation* count_pipes(Command *cmd){
     
     while(1){
         
-        
         if(cmd->cmd_buffer[main_index] == PIPE || cmd->cmd_buffer[main_index] == EOL){
             start = prev_pipe_idx + 1;
             end =  main_index - 1;
             prev_pipe_idx = main_index;
             
-        
             pipe_loc[pipe_count].count = 0;
             pipe_loc[pipe_count].start = start;
             pipe_loc[pipe_count].end = end; 
@@ -117,3 +117,74 @@ PipeLocation* count_pipes(Command *cmd){
 } 
 
 
+SpaceCheck __check_whitespaces(unsigned int start, unsigned int end, char* cmd_buffer){
+    int weight = 0;
+    if(cmd_buffer[start] == ' '){
+       ++weight; 
+    }
+    
+    if(cmd_buffer[end] == ' '){
+       weight += 2; 
+    }
+    
+    switch(weight){
+        case NONE:
+            return NONE;
+        case LEADING:
+            return LEADING;
+        case TRAILING:
+            return TRAILING;
+        case BOTH:
+            return BOTH;
+    }
+}
+
+void populate_command_store(Command *cmd, PipeLocation* pipe_loc){
+    // cmd_count: pipe count + 1
+    int cmd_count = pipe_loc[0].count + 1;
+    
+    unsigned int text_size, idx_counter;
+    PipeLocation *base_cmd = pipe_loc, *current_cmd;
+    for(int i=0; i<cmd_count; ++i){
+        
+        current_cmd = base_cmd + i;
+        text_size = (current_cmd->end - current_cmd->start) + 1;
+        SpaceCheck spacing = __check_whitespaces(current_cmd->start, current_cmd->end, cmd->cmd_buffer);
+        switch(spacing){
+            case NONE:
+                break;
+            case LEADING:
+            case TRAILING:{
+                --text_size;
+                break;
+                }
+            case BOTH:{
+                text_size -= 2;
+                break;
+                }
+        }
+        const int buff_size = text_size + 1;
+        char cmd_buf[buff_size];
+        idx_counter = 0;
+
+        for(int j=current_cmd->start; j<=current_cmd->end; ++j) {
+            if( j == current_cmd->start || j == current_cmd->end){
+                    if(cmd->cmd_buffer[j] == ' '){
+                        continue;
+                    }
+                }
+           
+            cmd_buf[idx_counter] = cmd->cmd_buffer[j];
+                
+            ++idx_counter;
+        }
+        
+        cmd_buf[buff_size - 1] = EOL;
+        Command cmd_fragment = {
+            .cmd_buffer = cmd_buf,
+            .cmd_len = strlen(cmd_buf),
+        };
+        printf("%s\n", cmd_fragment.cmd_buffer);
+        COMMAND_STORE[i] = &cmd_fragment;
+    } 
+}

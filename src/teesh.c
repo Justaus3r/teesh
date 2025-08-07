@@ -1,10 +1,11 @@
 #include "../include/command.h"
 #include "stdio.h"
+#include <string.h>
 
 void main(){
     Command cmd = {};
-    cmd.cmd_len = BUFF_LEN;
-    cmd.cmd_buffer = "echo 'ASD' | grep 'A'";
+    cmd.cmd_buffer = " echo 'ASD' | grep 'A' | grep 'B'";
+    cmd.cmd_len = strlen(cmd.cmd_buffer);
    // read_command_raw(&cmd);
    // printf("%s", cmd.cmd_buffer);
 
@@ -14,11 +15,19 @@ void main(){
     
     PipeLocation* pl = count_pipes(&cmd);
     
+    /* 
     for(int i=0;i<=pl[0].count; ++i){
         printf("---- FOR # %d ----\n", i);
         printf(" start: %d\n", pl[i].start);
         printf(" end: %d\n", pl[i].end);
         printf("-----------------\n");
     }
+    */
+    
+    populate_command_store(&cmd, pl);
+    
+    //Command* c = COMMAND_STORE[0]; 
+
+   // printf("%c", c->cmd_buffer[0]);
 
 }
