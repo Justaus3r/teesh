@@ -130,6 +130,7 @@ SpaceCheck __check_whitespaces(unsigned int start, unsigned int end, char* cmd_b
     
     spacing = weight;
     
+    return spacing;
 }
 
 void populate_command_store(Command *cmd, PipeLocation* pipe_loc){
