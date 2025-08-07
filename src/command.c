@@ -162,10 +162,8 @@ void populate_command_store(Command *cmd, PipeLocation* pipe_loc){
         idx_counter = 0;
 
         for(int j=current_cmd->start; j<=current_cmd->end; ++j) {
-            if( j == current_cmd->start || j == current_cmd->end){
-                    if(cmd->cmd_buffer[j] == ' '){
+            if((j == current_cmd->start || j == current_cmd->end) && cmd->cmd_buffer[j] == ' '){
                         continue;
-                    }
                 }
            
             cmd_buf[idx_counter] = cmd->cmd_buffer[j];
