@@ -119,6 +119,7 @@ PipeLocation* count_pipes(Command *cmd){
 
 SpaceCheck __check_whitespaces(unsigned int start, unsigned int end, char* cmd_buffer){
     int weight = 0;
+    SpaceCheck spacing;
     if(cmd_buffer[start] == ' '){
        ++weight; 
     }
@@ -127,16 +128,8 @@ SpaceCheck __check_whitespaces(unsigned int start, unsigned int end, char* cmd_b
        weight += 2; 
     }
     
-    switch(weight){
-        case NONE:
-            return NONE;
-        case LEADING:
-            return LEADING;
-        case TRAILING:
-            return TRAILING;
-        case BOTH:
-            return BOTH;
-    }
+    spacing = weight;
+    
 }
 
 void populate_command_store(Command *cmd, PipeLocation* pipe_loc){
@@ -180,11 +173,13 @@ void populate_command_store(Command *cmd, PipeLocation* pipe_loc){
         }
         
         cmd_buf[buff_size - 1] = EOL;
-        Command cmd_fragment = {
-            .cmd_buffer = cmd_buf,
-            .cmd_len = strlen(cmd_buf),
-        };
-        printf("%s\n", cmd_fragment.cmd_buffer);
-        COMMAND_STORE[i] = &cmd_fragment;
-    } 
+        
+        Command *cmd_fragment = (Command*)malloc(sizeof(Command));
+        cmd_fragment->cmd_buffer = cmd_buf;
+        cmd_fragment->cmd_len = strlen(cmd_buf);
+        
+        printf("%s\n", cmd_fragment->cmd_buffer);
+        COMMAND_STORE[i] = cmd_fragment;
+    }
+
 }

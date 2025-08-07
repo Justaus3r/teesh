@@ -23,11 +23,13 @@ void main(){
         printf("-----------------\n");
     }
     */
-    
+
     populate_command_store(&cmd, pl);
     
-    //Command* c = COMMAND_STORE[0]; 
-
-   // printf("%c", c->cmd_buffer[0]);
-
+    unsigned int cmd_count = pl[0].count;
+    
+    //for(int i=0;i<cmd_count;++i){
+        //Command* c = COMMAND_STORE[0]; 
+        //printf("%s\n", c->cmd_buffer);
+    //}
 }
