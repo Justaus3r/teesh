@@ -10,6 +10,8 @@ size_t read_command_raw(Command* cmd){
     size_t cmd_len = (size_t)cmd->cmd_len;
     cmd->cmd_buffer = (char*)malloc(cmd_len);
     size_t read_bytes = read(STDIN_FILENO, cmd->cmd_buffer, cmd_len);
+    
+    return read_bytes;
 }
 
 void __get_cmd_output(Command* cmd){
@@ -133,7 +135,7 @@ SpaceCheck __check_whitespaces(unsigned int start, unsigned int end, char* cmd_b
     return spacing;
 }
 
-void populate_command_store(Command *cmd, PipeLocation* pipe_loc){
+void populate_command_store(Command *cmd, Command **command_store, PipeLocation *pipe_loc){
     // cmd_count: pipe count + 1
     int cmd_count = pipe_loc[0].count + 1;
     
@@ -157,6 +159,7 @@ void populate_command_store(Command *cmd, PipeLocation* pipe_loc){
                 break;
                 }
         }
+        // buff_size: textsize + nullchar
         const int buff_size = text_size + 1;
         char cmd_buf[buff_size];
         idx_counter = 0;
@@ -172,13 +175,22 @@ void populate_command_store(Command *cmd, PipeLocation* pipe_loc){
         }
         
         cmd_buf[buff_size - 1] = EOL;
-        
         Command *cmd_fragment = (Command*)malloc(sizeof(Command));
-        cmd_fragment->cmd_buffer = cmd_buf;
-        cmd_fragment->cmd_len = strlen(cmd_buf);
+        size_t buf_len = BUFF_LEN; 
         
-        printf("%s\n", cmd_fragment->cmd_buffer);
-        COMMAND_STORE[i] = cmd_fragment;
-    }
+        char *cmd_buffer = (char*)malloc(buf_len);
+        
+        for(int j=0; j<strlen(cmd_buf); ++j){
+            cmd_buffer[j] = cmd_buf[j];
+        }
 
+        strcpy(cmd_buffer, cmd_buf);
+        cmd_fragment->cmd_buffer = cmd_buffer;
+        cmd_fragment->cmd_len = strlen(cmd_buffer);
+        strcpy(cmd_fragment->cmd_output, "");
+        cmd_fragment->cmd_output_len = 0;
+        
+        command_store[i] = cmd_fragment;
+    }
+    
 }

@@ -8,7 +8,7 @@ typedef struct {
     char* cmd_buffer;
     unsigned long int cmd_len;
     char cmd_output[CMD_OUT_LEN];
-    int cmd_output_len;
+    unsigned int cmd_output_len;
 } Command;
 
 
@@ -33,7 +33,6 @@ typedef enum {
 
 size_t read_command_raw(Command* cmd);
 
-static Command* COMMAND_STORE[MAX_FDS];
 
 void __get_cmd_output(Command*);
 CursorPosition get_cursor_position(int check_unicode);
@@ -43,6 +42,6 @@ int is_unicode_supported();
 PipeLocation* count_pipes(Command*);
 
 SpaceCheck __check_whitespaces(unsigned int, unsigned int, char*);
-void populate_command_store(Command*, PipeLocation*);
+void populate_command_store(Command*, Command**, PipeLocation*);
 
 #endif // COMMAND_H

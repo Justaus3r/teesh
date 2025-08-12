@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+#vim: filetype=bash
+
+bin_file="./teesh"
+
+set -e
+
+echo "Running Valgrind-Memcheck..."
+valgrind --leak-check=yes $bin_file
